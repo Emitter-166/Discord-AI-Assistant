@@ -57,7 +57,7 @@ const openai = new OpenAIApi(configuration);
 
 let prompts: string[] = [];
 
-let identity = fs.readFileSync('./identity.txt').toString() + "\n";
+let identity = fs.readFileSync(path.join(__dirname, "..", 'identity.txt')).toString() + "\n";
 
 const getResponse = async (text: string): Promise<string> => {
     prompts.push( user_name + ": " + text);
@@ -66,14 +66,17 @@ const getResponse = async (text: string): Promise<string> => {
         prompts.shift();
     }
     prompts.forEach(str => text += (str + "\n"));
+
+
     const response = await openai.createCompletion({
         model: "text-davinci-003",
         prompt: `${identity} ${text} \n ${name}:`,
-        temperature: 0.8,
-        max_tokens: 255,
-        top_p: 0.3,
-        frequency_penalty: 0.5,
-        presence_penalty: 0.0,
+        temperature: 0.7,
+        max_tokens: 256,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+
     });
     prompts.push(name + ": " + response.data.choices[0].text as string);
     return response.data.choices[0].text as string
